@@ -62,7 +62,7 @@
 		"@veramo/core": "^5.6.0",
 		"@veramo/credential-ld": "^5.6.0",
 		"@veramo/credential-w3c": "^5.6.0",
-		"@veramo/data-store": "^5.6.0",
+		"@veramo/data-store": "^6.0.0",
 		"@veramo/did-manager": "^5.6.0",
 		"@veramo/did-provider-key": "^5.6.0",
 		"@veramo/did-resolver": "^5.6.0",
