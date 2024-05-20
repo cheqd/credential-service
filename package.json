@@ -67,7 +67,7 @@
 		"@veramo/did-provider-key": "^5.6.0",
 		"@veramo/did-resolver": "^5.6.0",
 		"@veramo/key-manager": "^5.6.0",
-		"@veramo/kms-local": "^5.6.0",
+		"@veramo/kms-local": "^6.0.0",
 		"@veramo/utils": "^5.6.0",
 		"@verida/account-node": "^3.0.2",
 		"@verida/client-ts": "^3.0.3",
