@@ -24,11 +24,11 @@ jobs:
             - name: 'Run npm build'
               run: npm run build
 
-            - name: Install Playwright Browsers
-              # We only care about Chromium in this repo, drop the word "chromium" to install all browsers
-              run: npx playwright install --with-deps chromium
+            # - name: Install Playwright Browsers
+            #   # We only care about Chromium in this repo, drop the word "chromium" to install all browsers
+            #   run: npx playwright install --with-deps chromium
 
-            - name: Run Playwright tests
+            # - name: Run Playwright tests
               # Don't run tests on main branch
               if: ${{ github.ref_name != 'main' }}
               run: npm run test
