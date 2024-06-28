@@ -6,71 +6,7 @@ defaults:
         shell: bash
 
 jobs:
-    build-node:
-        name: 'Build Node.js'
-        runs-on: ubuntu-latest
-
-        steps:
-            - uses: actions/checkout@v4
-
-            - uses: actions/setup-node@v4
-              with:
-                  node-version: 20
-                  cache: 'npm'
-
-            - name: 'Clean install dependencies'
-              run: npm ci
-
-            - name: 'Run npm build'
-              run: npm run build
-
-            # - name: Install Playwright Browsers
-            #   # We only care about Chromium in this repo, drop the word "chromium" to install all browsers
-            #   run: npx playwright install --with-deps chromium
-
-            # - name: Run Playwright tests
-              # Don't run tests on main branch
-              if: ${{ github.ref_name != 'main' }}
-              run: npm run test
-              env:
-                CI: true
-                APPLICATION_BASE_URL: ${{ vars.APPLICATION_BASE_URL }}
-                COOKIE_SECRET: ${{ secrets.COOKIE_SECRET }}
-                ENABLE_AUTHENTICATION: ${{ vars.ENABLE_AUTHENTICATION }}
-                ENABLE_EXTERNAL_DB: ${{ vars.ENABLE_EXTERNAL_DB }}
-                ENABLE_VERIDA_CONNECTOR: ${{ vars.ENABLE_VERIDA_CONNECTOR }}
-                EXTERNAL_DB_CERT: ${{ secrets.EXTERNAL_DB_CERT }}
-                EXTERNAL_DB_CONNECTION_URL: ${{ secrets.EXTERNAL_DB_CONNECTION_URL }}
-                EXTERNAL_DB_ENCRYPTION_KEY: ${{ secrets.EXTERNAL_DB_ENCRYPTION_KEY }}
-                LOGTO_APP_ID: ${{ vars.LOGTO_APP_ID }}
-                LOGTO_APP_SECRET: ${{ secrets.LOGTO_APP_SECRET }}
-                LOGTO_DEFAULT_RESOURCE_URL: ${{ vars.LOGTO_DEFAULT_RESOURCE_URL }}
-                LOGTO_DEFAULT_ROLE_ID: ${{ vars.LOGTO_DEFAULT_ROLE_ID }}
-                LOGTO_ENDPOINT: ${{ vars.LOGTO_ENDPOINT }}
-                LOGTO_M2M_APP_ID: ${{ vars.LOGTO_M2M_APP_ID }}
-                LOGTO_M2M_APP_SECRET: ${{ secrets.LOGTO_M2M_APP_SECRET }}
-                LOGTO_MANAGEMENT_API: ${{ vars.LOGTO_MANAGEMENT_API }}
-                LOGTO_WEBHOOK_SECRET: ${{ secrets.LOGTO_WEBHOOK_SECRET }}
-                MAINNET_RPC_URL: ${{ vars.MAINNET_RPC_URL }}
-                POLYGON_PRIVATE_KEY: ${{ secrets.POLYGON_PRIVATE_KEY }}
-                POLYGON_RPC_URL_MAINNET: ${{ vars.POLYGON_RPC_URL_MAINNET }}
-                POLYGON_RPC_URL_TESTNET: ${{ vars.POLYGON_RPC_URL_TESTNET }}
-                RESOLVER_URL: ${{ vars.RESOLVER_URL }}
-                TEST_USER_EMAIL: ${{ secrets.TEST_USER_EMAIL }}
-                TEST_USER_PASSWORD: ${{ secrets.TEST_USER_PASSWORD }}
-                TESTNET_RPC_URL: ${{ vars.TESTNET_RPC_URL }}
-                VERIDA_PRIVATE_KEY: ${{ secrets.VERIDA_PRIVATE_KEY }}
-                CREDS_DECRYPTION_SECRET: ${{ secrets.CREDS_DECRYPTION_SECRET }}
-
-            - uses: actions/upload-artifact@v4
-              if: always()
-              with:
-                name: playwright-report
-                path: playwright-report/
-                retention-days: 14
-                if-no-files-found: ignore
-
-
+  
     build-docker:
         name: 'Build Docker image'
         runs-on: ubuntu-latest
