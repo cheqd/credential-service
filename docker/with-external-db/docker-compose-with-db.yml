@@ -12,7 +12,7 @@ services:
         # To change the image version, edit the ":latest" tag to the desired version
         # For production/stable release, use ":latest"
         # For development/staging release, use ":staging-latest"
-        image: ghcr.io/cheqd/credential-service:latest
+        image: ghcr.io/cheqd/studio:latest
         depends_on:
             postgres:
                 condition: service_healthy
@@ -33,7 +33,7 @@ services:
     # This service is used as a ONE-TIME setup service to run migrations
     # Only relevant if you're using the app with EXTERNAL_DB=true
     app-migrations:
-        image: ghcr.io/cheqd/credential-service:latest
+        image: ghcr.io/cheqd/studio:latest
         depends_on:
             postgres:
                 condition: service_healthy

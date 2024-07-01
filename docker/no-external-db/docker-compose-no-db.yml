@@ -9,7 +9,7 @@ services:
         # To change the image version, edit the ":latest" tag to the desired version
         # For production/stable release, use ":latest"
         # For development/staging release, use ":staging-latest"
-        image: ghcr.io/cheqd/credential-service:latest
+        image: ghcr.io/cheqd/studio:latest
         ports:
             - 3000:3000
         # NOTE: Edit the values present within this file before running the service

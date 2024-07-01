@@ -1,12 +1,12 @@
 {
 	"name": "@cheqd/credential-service",
 	"version": "2.20.3-develop.4",
-	"description": "cheqd Credential Service Backend",
+	"description": "cheqd Studio Backend",
 	"source": "src/index.ts",
 	"main": "dist/index.js",
 	"license": "Apache-2.0",
 	"author": "Cheqd Foundation Limited (https://github.com/cheqd)",
-	"repository": "https://github.com/cheqd/credential-service.git",
+	"repository": "https://github.com/cheqd/studio.git",
 	"type": "module",
 	"exports": {
 		".": {

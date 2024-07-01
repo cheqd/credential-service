@@ -1,16 +1,16 @@
 # Credential Service
 
-[![GitHub release (latest by date)](https://img.shields.io/github/v/release/cheqd/credential-service?color=green&label=stable%20release&style=flat-square)](https://github.com/cheqd/credential-service/releases/latest)
-![GitHub Release Date](https://img.shields.io/github/release-date/cheqd/credential-service?color=green&style=flat-square)
-[![GitHub license](https://img.shields.io/github/license/cheqd/credential-service?color=blue&style=flat-square)](https://github.com/cheqd/credential-service/blob/main/LICENSE)
+[![GitHub release (latest by date)](https://img.shields.io/github/v/release/cheqd/studio?color=green&label=stable%20release&style=flat-square)](https://github.com/cheqd/studio/releases/latest)
+![GitHub Release Date](https://img.shields.io/github/release-date/cheqd/studio?color=green&style=flat-square)
+[![GitHub license](https://img.shields.io/github/license/cheqd/studio?color=blue&style=flat-square)](https://github.com/cheqd/studio/blob/main/LICENSE)
 
-[![GitHub release (latest by date including pre-releases)](https://img.shields.io/github/v/release/cheqd/credential-service?include_prereleases&label=dev%20release&style=flat-square)](https://github.com/cheqd/credential-service/releases/)
-![GitHub commits since latest release (by date)](https://img.shields.io/github/commits-since/cheqd/credential-service/latest?style=flat-square)
-[![GitHub contributors](https://img.shields.io/github/contributors/cheqd/credential-service?label=contributors%20%E2%9D%A4%EF%B8%8F&style=flat-square)](https://github.com/cheqd/credential-service/graphs/contributors)
+[![GitHub release (latest by date including pre-releases)](https://img.shields.io/github/v/release/cheqd/studio?include_prereleases&label=dev%20release&style=flat-square)](https://github.com/cheqd/studio/releases/)
+![GitHub commits since latest release (by date)](https://img.shields.io/github/commits-since/cheqd/studio/latest?style=flat-square)
+[![GitHub contributors](https://img.shields.io/github/contributors/cheqd/studio?label=contributors%20%E2%9D%A4%EF%B8%8F&style=flat-square)](https://github.com/cheqd/studio/graphs/contributors)
 
-[![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status/cheqd/credential-service/dispatch.yml?label=workflows&style=flat-square)](https://github.com/cheqd/credential-service/actions/workflows/dispatch.yml)
-[![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status/cheqd/credential-service/codeql.yml?label=CodeQL&style=flat-square)](https://github.com/cheqd/credential-service/actions/workflows/codeql.yml)
-![GitHub repo size](https://img.shields.io/github/repo-size/cheqd/credential-service?style=flat-square)
+[![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status/cheqd/studio/dispatch.yml?label=workflows&style=flat-square)](https://github.com/cheqd/studio/actions/workflows/dispatch.yml)
+[![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status/cheqd/studio/codeql.yml?label=CodeQL&style=flat-square)](https://github.com/cheqd/studio/actions/workflows/codeql.yml)
+![GitHub repo size](https://img.shields.io/github/repo-size/cheqd/studio?style=flat-square)
 
 ## ℹ️ Overview
 
@@ -26,8 +26,8 @@ definition endpoints that list all of the APIs and how they work.
 
 The Swagger API definition pages are:
 
-- [Production / Stable Release APIs](https://credential-service.cheqd.net/swagger/)
-- [Staging / Development Release APIs](https://credential-service-staging.cheqd.net/swagger/)
+- [Production / Stable Release APIs](https://studio-api.cheqd.net/swagger/)
+- [Staging / Development Release APIs](https://studio-api-staging.cheqd.net/swagger/)
 
 ## 🔧 Configuration
 
@@ -153,7 +153,7 @@ necessary to configure the service. (See section _Configuration_ above.)
 Construct the postgres URL and configure the env variables mentioned above.
 
 Spinning up a Docker container from the
-[pre-built credential-service Docker image on Github](https://github.com/cheqd/credential-service/pkgs/container/credential-service)
+[pre-built studio Docker image on Github](https://github.com/cheqd/studio/pkgs/container/studio)
 is as simple as the command below:
 
 #### Configure PostgreSQL database
@@ -187,7 +187,7 @@ docker compose -f docker/with-external-db/docker-compose-with-db.yml --profile l
 Configuring LogTo is outside the scope of this guide, and we recommend reading
 [LogTo documentation](https://docs.logto.io/) to familiarise yourself.
 
-#### Start credential-service app
+#### Start studio app
 
 Configure the environment variables in the [`with-db.env` file](docker/with-external-db/with-db.env) with the settings
 described in section above. Depending on whether you are using external Veramo KMS only, LogTo only, or both you will
@@ -224,13 +224,13 @@ docker compose -f docker/with-external-db/docker-compose-with-db.yml --profile l
 To build your own image using Docker, use the [Dockerfile](docker/Dockerfile) provided.
 
 ```bash
-docker build --file docker/Dockerfile --target runner . --tag credential-service:local
+docker build --file docker/Dockerfile --target runner . --tag studio:local
 ```
 
 ## 🐞 Bug reports & 🤔 feature requests
 
 If you notice anything not behaving how you expected, or would like to make a suggestion / request for a new feature,
-please create a [**new issue**](https://github.com/cheqd/credential-service/issues/new/choose) and let us know.
+please create a [**new issue**](https://github.com/cheqd/studio/issues/new/choose) and let us know.
 
 ## 💬 Community
 

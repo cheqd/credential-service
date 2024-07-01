@@ -109,12 +109,12 @@ jobs:
                   load: true
                   target: runner
                   tags: ${{ steps.meta.outputs.tags }}
-                  outputs: type=docker,dest=credential-service-staging.tar
+                  outputs: type=docker,dest=studio-staging.tar
                   cache-from: type=gha
                   cache-to: type=gha,mode=min
 
             - name: Upload build image as artifact
               uses: actions/upload-artifact@v4
               with:
-                  name: credential-service-staging
-                  path: credential-service-staging.tar
+                  name: studio-staging
+                  path: studio-staging.tar

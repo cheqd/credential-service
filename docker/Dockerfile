@@ -1,5 +1,5 @@
 ###############################################################
-###         STAGE 1: Build credential-service app           ###
+###         STAGE 1: Build cheqd studio app                 ###
 ###############################################################
 
 FROM node:18-alpine AS builder
@@ -18,7 +18,7 @@ RUN npm run build
 
 
 ###############################################################
-###         STAGE 2: Build credential-service runner        ###
+###         STAGE 2: Build cheqd studio runner              ###
 ###############################################################
 
 FROM node:18-alpine AS runner

@@ -13,7 +13,7 @@ jobs:
             IMAGE_NAME: ${{ github.repository }}
         environment:
             name: staging
-            url: https://credential-service-staging.cheqd.net
+            url: https://studio-api-staging.cheqd.net
 
         steps:
             - name: Install DigitalOcean CLI
@@ -34,10 +34,10 @@ jobs:
             - name: Download docker image
               uses: actions/download-artifact@v4
               with:
-                  name: credential-service-staging
+                  name: studio-staging
 
             - name: Load Docker image
-              run: docker image load --input credential-service-staging.tar
+              run: docker image load --input studio-staging.tar
 
             - name: Push image to GitHub Container Registry
               run: docker image push --all-tags ghcr.io/${{ env.IMAGE_NAME }}

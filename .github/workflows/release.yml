@@ -60,7 +60,7 @@ jobs:
             IMAGE_NAME: ${{ github.repository }}
         environment:
             name: production
-            url: https://credential-service.cheqd.net
+            url: https://studio-api.cheqd.net
 
         steps:
             - uses: actions/checkout@v4
@@ -103,8 +103,8 @@ jobs:
                       type=raw,value=production-latest
                       type=sha,format=long
                   labels: |
-                      org.opencontainers.image.description="Cheqd Credential Service"
-                      org.opencontainers.image.source="https://github.com/cheqd/credential-service"
+                      org.opencontainers.image.description="Cheqd Studio"
+                      org.opencontainers.image.source="https://github.com/cheqd/studio"
                       org.opencontainers.image.vendor="Cheqd Foundation Limited"
                       org.opencontainers.image.created={{date 'dddd, MMMM Do YYYY, h:mm:ss a'}}
                       org.opencontainers.image.documentation="https://docs.cheqd.io/identity"
