@@ -13,15 +13,12 @@ import type Stripe from 'stripe';
 import type { SafeAPIResponse } from '../../types/common.js';
 
 import { CheqdNetwork, checkBalance } from '@cheqd/sdk';
-import {
-	DEFAULT_DENOM_EXPONENT,
-	MINIMAL_DENOM,
-	OperationNameEnum,
-	TESTNET_FAUCET_UPPER_CAP_CHEQ,
-} from '../../types/constants.js';
+import { MINIMAL_DENOM, OperationNameEnum, TESTNET_FAUCET_UPPER_CAP_CHEQ } from '../../types/constants.js';
 import { CustomerService } from '../../services/api/customer.js';
 import { LogToHelper } from '../../middleware/auth/logto-helper.js';
 import { FaucetHelper } from '../../helpers/faucet.js';
+import { PriceHelper } from '../../helpers/price.js';
+import { cheqToNcheq, ncheqToCheq, toSafeFaucetAmount } from '../../helpers/denom.js';
 import { StatusCodes } from 'http-status-codes';
 import { LogToWebHook } from '../../middleware/hook.js';
 import { UserService } from '../../services/api/user.js';
@@ -38,6 +35,7 @@ import { getStripeObjectKey } from '../../utils/index.js';
 import { KeyService } from '../../services/api/key.js';
 import { LocalStore } from '../../database/cache/store.js';
 import { BootStrapAccountResponse } from '../../types/account.js';
+import type { AccountNetworkBalance, QueryAccountBalancesResponseBody } from '../../types/account.js';
 import { RoleEntity } from '../../database/entities/role.entity.js';
 import { MailchimpService } from '../../helpers/mailchimp.js';
 import { IdentifierService } from '../../services/api/identifier.js';
@@ -832,26 +830,103 @@ export class AccountController {
 			});
 		}
 	}
+
+	/**
+	 * @openapi
+	 *
+	 * /account/balances:
+	 *   get:
+	 *     tags: [Account]
+	 *     summary: Fetch payment account balances.
+	 *     description: >-
+	 *       Returns the on-chain balance of the authenticated customer's mainnet and testnet payment
+	 *       accounts, expressed in ncheq, CHEQ and USD. The CHEQ/USD rate is sourced from CoinGecko and
+	 *       cached; if it (or a network's RPC endpoint) is unavailable the response still returns 200 with
+	 *       the affected `usd`/`rate`/`balance` fields set to `null`.
+	 *     responses:
+	 *       200:
+	 *         description: The request was successful.
+	 *         content:
+	 *           application/json:
+	 *             schema:
+	 *               $ref: '#/components/schemas/AccountBalancesResponse'
+	 *       401:
+	 *         $ref: '#/components/schemas/UnauthorizedError'
+	 *       500:
+	 *         $ref: '#/components/schemas/InternalError'
+	 */
+	public async getBalances(_request: Request, response: Response) {
+		try {
+			if (!response.locals.customer) {
+				return response.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+					error: 'Bad state cause there is no customer assigned to the user yet. Please contact administrator.',
+				} satisfies UnsuccessfulResponseBody);
+			}
+
+			const cachedAccounts = LocalStore.instance.getCustomerAccounts(response.locals.customer.customerId);
+			const paymentAccounts =
+				cachedAccounts?.length === 2
+					? cachedAccounts
+					: await PaymentAccountService.instance.find({ customer: response.locals.customer });
+
+			const addressOf = (network: CheqdNetwork) =>
+				paymentAccounts.find((acc) => acc.namespace === network)?.address;
+			const mainnetAddress = addressOf(CheqdNetwork.Mainnet);
+			const testnetAddress = addressOf(CheqdNetwork.Testnet);
+
+			// `undefined` -> no account / not configured; `null` -> RPC query failed
+			// (kept distinct from a successful empty "0" balance).
+			const safeBalanceNcheq = async (address: string | undefined, rpcUrl: string | undefined) => {
+				if (!address || !rpcUrl) return undefined;
+				try {
+					return await getBalanceNcheq(address, rpcUrl);
+				} catch (error) {
+					console.error(
+						`getBalances: RPC balance query failed for ${address}:`,
+						(error as Error)?.message || error
+					);
+					return null;
+				}
+			};
+
+			const [rate, mainnetNcheq, testnetNcheq] = await Promise.all([
+				PriceHelper.getCheqUsdRate(),
+				safeBalanceNcheq(mainnetAddress, process.env.MAINNET_RPC_URL),
+				safeBalanceNcheq(testnetAddress, process.env.TESTNET_RPC_URL),
+			]);
+
+			const toNetworkBalance = (
+				address: string | undefined,
+				ncheq: bigint | null | undefined
+			): AccountNetworkBalance | null => {
+				if (!address) return null;
+				if (ncheq === null || ncheq === undefined) {
+					return { address, denom: MINIMAL_DENOM, balance: null, usd: null };
+				}
+				const cheq = ncheqToCheq(ncheq);
+				return {
+					address,
+					denom: MINIMAL_DENOM,
+					balance: { ncheq: ncheq.toString(), cheq },
+					usd: rate ? cheq * rate.cheqUsd : null,
+				};
+			};
+
+			return response.status(StatusCodes.OK).json({
+				mainnet: toNetworkBalance(mainnetAddress, mainnetNcheq),
+				testnet: toNetworkBalance(testnetAddress, testnetNcheq),
+				rate,
+			} satisfies QueryAccountBalancesResponseBody);
+		} catch (error) {
+			return response.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+				error: `Internal error: ${(error as Error)?.message || error}`,
+			} satisfies UnsuccessfulResponseBody);
+		}
+	}
 }
 
 const FAUCET_REQUEST_MORE_EMAIL = 'product@cheqd.io';
 const FAUCET_REQUEST_MORE_SUBJECT = 'Request more cheqd testnet CHEQ tokens';
-
-function cheqToNcheq(amountCheq: number): bigint {
-	return BigInt(Math.floor(amountCheq * 10 ** DEFAULT_DENOM_EXPONENT));
-}
-
-function ncheqToCheq(amountNcheq: bigint): number {
-	return Number(amountNcheq) / 10 ** DEFAULT_DENOM_EXPONENT;
-}
-
-function toSafeFaucetAmount(amountNcheq: bigint): number {
-	if (amountNcheq > BigInt(Number.MAX_SAFE_INTEGER)) {
-		throw new Error('Faucet amount exceeds JavaScript safe integer range.');
-	}
-
-	return Number(amountNcheq);
-}
 
 function buildFaucetBalanceResponse(currentBalanceNcheq: bigint, capNcheq: bigint, maxAllowedNcheq: bigint) {
 	const remainingNcheq = maxAllowedNcheq > 0n ? maxAllowedNcheq : 0n;
@@ -872,10 +947,31 @@ function buildFaucetBalanceResponse(currentBalanceNcheq: bigint, capNcheq: bigin
 	};
 }
 
+const BALANCE_QUERY_TIMEOUT_MS = 8000;
+
+async function getBalanceNcheq(address: string, rpcUrl: string): Promise<bigint> {
+	// `checkBalance` opens a StargateClient connection that exposes no cancellation,
+	// so guard it with a timeout to keep the request bounded.
+	let timer: NodeJS.Timeout | undefined;
+	try {
+		const balances = await Promise.race([
+			checkBalance(address, rpcUrl),
+			new Promise<never>((_, reject) => {
+				timer = setTimeout(
+					() => reject(new Error(`Balance query timed out after ${BALANCE_QUERY_TIMEOUT_MS}ms`)),
+					BALANCE_QUERY_TIMEOUT_MS
+				);
+			}),
+		]);
+		const balance = balances.find((coin) => coin.denom === MINIMAL_DENOM);
+		return BigInt(balance?.amount || '0');
+	} finally {
+		if (timer) clearTimeout(timer);
+	}
+}
+
 async function getTestnetBalanceNcheq(address: string): Promise<bigint> {
-	const balances = await checkBalance(address, process.env.TESTNET_RPC_URL);
-	const balance = balances.find((coin) => coin.denom === MINIMAL_DENOM);
-	return BigInt(balance?.amount || '0');
+	return getBalanceNcheq(address, process.env.TESTNET_RPC_URL);
 }
 
 async function resolveFaucetAccount(

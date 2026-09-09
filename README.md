@@ -115,6 +115,15 @@ some tokens on the testnet for making the process simpler.
 
 Studio exposes `POST /account/faucet` for authenticated Studio users on Basic-or-higher subscriptions. The endpoint accepts optional `address` and `amount` fields; `amount` is expressed in CHEQ. If `address` is omitted, Studio uses the customer's testnet payment account. If `amount` is omitted, Studio tops the address up to `TESTNET_FAUCET_UPPER_CAP_CHEQ`. Requests that exceed the remaining cap return a `requestMore.mailtoHref` for contacting `product@cheqd.io`.
 
+#### Account balances & CHEQ pricing
+
+`GET /account/balances` (`read:account` scope) returns the on-chain balance of the authenticated customer's mainnet and testnet payment accounts in `ncheq`, `CHEQ` and `USD`. The CHEQ/USD rate is fetched from CoinGecko and cached in-process. The endpoint degrades gracefully: if the rate lookup or a network's RPC endpoint is unavailable it still returns `200`, with the affected `usd` / `rate` / `balance` fields set to `null`.
+
+1. `COINGECKO_API_URL`: CoinGecko API base URL (Default: `https://api.coingecko.com/api/v3`). Set to a `pro-api.coingecko.com` URL to use a Pro key.
+2. `COINGECKO_TOKEN_ID`: CoinGecko coin id for CHEQ (Default: `cheqd-network`).
+3. `COINGECKO_API_KEY` (optional): CoinGecko API key. Sent as `x-cg-demo-api-key`, or `x-cg-pro-api-key` when `COINGECKO_API_URL` points at the Pro API.
+4. `CHEQ_USD_RATE_CACHE_TTL` (optional): seconds to cache the CHEQ/USD rate for (Default: `300`).
+
 #### Stripe integration
 
 The application supports Stripe integration for payment processing.

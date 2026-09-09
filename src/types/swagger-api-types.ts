@@ -2125,6 +2125,54 @@
  *          type: integer
  *        resources:
  *          type: integer
+ *     AccountNetworkBalance:
+ *       type: object
+ *       nullable: true
+ *       description: Balance of a single payment account. `null` when the customer has no account on that network.
+ *       properties:
+ *         address:
+ *           type: string
+ *           example: cheqd1abcd...
+ *         denom:
+ *           type: string
+ *           example: ncheq
+ *         balance:
+ *           type: object
+ *           nullable: true
+ *           description: On-chain balance. `null` when the network's RPC query failed.
+ *           properties:
+ *             ncheq:
+ *               type: string
+ *               example: "1500000000000"
+ *             cheq:
+ *               type: number
+ *               example: 1500
+ *         usd:
+ *           type: number
+ *           nullable: true
+ *           description: balance.cheq multiplied by the CHEQ/USD rate. `null` when the balance or the rate is unavailable.
+ *           example: 3.03
+ *     AccountBalancesResponse:
+ *       type: object
+ *       properties:
+ *         mainnet:
+ *           $ref: '#/components/schemas/AccountNetworkBalance'
+ *         testnet:
+ *           $ref: '#/components/schemas/AccountNetworkBalance'
+ *         rate:
+ *           type: object
+ *           nullable: true
+ *           description: CHEQ/USD spot rate used for the `usd` fields. `null` when it could not be fetched.
+ *           properties:
+ *             cheqUsd:
+ *               type: number
+ *               example: 0.00202
+ *             source:
+ *               type: string
+ *               example: coingecko
+ *             asOf:
+ *               type: string
+ *               format: date-time
  *     SchemaUrl:
  *       type: object
  *       properties:

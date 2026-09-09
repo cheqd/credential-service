@@ -70,6 +70,12 @@ export const FAUCET_AMOUNT = parseNumberEnv(process.env.FAUCET_AMOUNT, 100000000
 export const FAUCET_ACCESS_CLIENT_ID = process.env.FAUCET_ACCESS_CLIENT_ID || '';
 export const FAUCET_ACCESS_CLIENT_SECRET = process.env.FAUCET_ACCESS_CLIENT_SECRET || '';
 
+// CHEQ market data (CoinGecko), used by GET /account/balances for CHEQ to USD conversion
+export const COINGECKO_API_URL = process.env.COINGECKO_API_URL || 'https://api.coingecko.com/api/v3';
+export const COINGECKO_TOKEN_ID = process.env.COINGECKO_TOKEN_ID || 'cheqd-network';
+export const COINGECKO_API_KEY = process.env.COINGECKO_API_KEY || '';
+export const CHEQ_USD_RATE_CACHE_TTL = parseNumberEnv(process.env.CHEQ_USD_RATE_CACHE_TTL, 300); // seconds
+
 // Verifiable Credential constants
 export const VC_CONTEXT = ['https://www.w3.org/2018/credentials/v1'];
 export const VC_TYPE = 'VerifiableCredential';

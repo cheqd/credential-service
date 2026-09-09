@@ -62,6 +62,12 @@ declare global {
 			TESTNET_MINIMUM_BALANCE: string;
 			TESTNET_FAUCET_UPPER_CAP_CHEQ: string;
 
+			// CHEQ market data (CoinGecko)
+			COINGECKO_API_URL: string;
+			COINGECKO_TOKEN_ID: string;
+			COINGECKO_API_KEY: string | undefined;
+			CHEQ_USD_RATE_CACHE_TTL: string | undefined;
+
 			// Creds
 			CREDS_DECRYPTION_SECRET: string;
 

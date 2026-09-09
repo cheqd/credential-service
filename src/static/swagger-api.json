@@ -3146,6 +3146,72 @@
           }
         }
       },
+      "AccountNetworkBalance": {
+        "type": "object",
+        "nullable": true,
+        "description": "Balance of a single payment account. `null` when the customer has no account on that network.",
+        "properties": {
+          "address": {
+            "type": "string",
+            "example": "cheqd1abcd..."
+          },
+          "denom": {
+            "type": "string",
+            "example": "ncheq"
+          },
+          "balance": {
+            "type": "object",
+            "nullable": true,
+            "description": "On-chain balance. `null` when the network's RPC query failed.",
+            "properties": {
+              "ncheq": {
+                "type": "string",
+                "example": "1500000000000"
+              },
+              "cheq": {
+                "type": "number",
+                "example": 1500
+              }
+            }
+          },
+          "usd": {
+            "type": "number",
+            "nullable": true,
+            "description": "balance.cheq multiplied by the CHEQ/USD rate. `null` when the balance or the rate is unavailable.",
+            "example": 3.03
+          }
+        }
+      },
+      "AccountBalancesResponse": {
+        "type": "object",
+        "properties": {
+          "mainnet": {
+            "$ref": "#/components/schemas/AccountNetworkBalance"
+          },
+          "testnet": {
+            "$ref": "#/components/schemas/AccountNetworkBalance"
+          },
+          "rate": {
+            "type": "object",
+            "nullable": true,
+            "description": "CHEQ/USD spot rate used for the `usd` fields. `null` when it could not be fetched.",
+            "properties": {
+              "cheqUsd": {
+                "type": "number",
+                "example": 0.00202
+              },
+              "source": {
+                "type": "string",
+                "example": "coingecko"
+              },
+              "asOf": {
+                "type": "string",
+                "format": "date-time"
+              }
+            }
+          }
+        }
+      },
       "SchemaUrl": {
         "type": "object",
         "properties": {
@@ -3449,6 +3515,33 @@
           },
           "400": {
             "$ref": "#/components/schemas/InvalidRequest"
+          },
+          "401": {
+            "$ref": "#/components/schemas/UnauthorizedError"
+          },
+          "500": {
+            "$ref": "#/components/schemas/InternalError"
+          }
+        }
+      }
+    },
+    "/account/balances": {
+      "get": {
+        "tags": [
+          "Account"
+        ],
+        "summary": "Fetch payment account balances.",
+        "description": "Returns the on-chain balance of the authenticated customer's mainnet and testnet payment accounts, expressed in ncheq, CHEQ and USD. The CHEQ/USD rate is sourced from CoinGecko and cached; if it (or a network's RPC endpoint) is unavailable the response still returns 200 with the affected `usd`/`rate`/`balance` fields set to `null`.",
+        "responses": {
+          "200": {
+            "description": "The request was successful.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AccountBalancesResponse"
+                }
+              }
+            }
           },
           "401": {
             "$ref": "#/components/schemas/UnauthorizedError"

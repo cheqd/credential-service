@@ -311,6 +311,7 @@ class App {
 		app.get('/account', new AccountController().get);
 		app.get('/account/idtoken', new AccountController().getIdToken);
 		app.get('/account/analytics', new AccountController().getAnalytics);
+		app.get('/account/balances', new AccountController().getBalances);
 
 		// LogTo webhooks
 		app.post('/account/bootstrap', LogToWebHook.verifyHookSignature, new AccountController().bootstrap);
